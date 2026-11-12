@@ -3,11 +3,11 @@
 ## People and collaboration
 
 - **Working mode:**  Solo  [ ] 
-- **Student A (name / GitHub):** Meriem Bchini / MeriemBchini
-- **Student B (name / GitHub; if pair):** N/A unless working in a pair
-- **Fork owner:** To be completed after creating the fork
-- **Collaborator invitation accepted?** Not applicable if solo
-- **Individual work differentiation:** `QUALITY_INVESTIGATION.md` in the selected repository. Add the GitHub link after committing the file.
+- **Student A (name / GitHub):** Meriem Bchini / https://github.com/MeriemBchini/recommenders
+
+- **Fork owner:*MeriemBchini* 
+
+- **Individual work differentiation:** `QUALITY_INVESTIGATION.md` 
 
 ---
 
