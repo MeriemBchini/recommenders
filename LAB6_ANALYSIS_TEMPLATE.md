@@ -1,11 +1,13 @@
 # Lab #6 – Investigation Record
 
-**Team / student(s):** [meriem bchini]  
+**Team / student(s):** Meriem Bchini  
 **Mode:** Individual  
 **Approved upstream project:** TensorFlow Recommenders  
-**Repository:**https://github.com/MeriemBchini/recommenders
-**Working branch:** main
-**Baseline SHA:*abdbe4319718f2c6ad5ac681ede78a37aa508c9a* 
+**Repository:** https://github.com/MeriemBchini/recommenders  
+**Working branch:** `main`
+
+---
+
 ## Task 1 – Stakeholder, GQM, and Code Smell Selection
 
 ### Stakeholder: Alex – Software Maintainer
@@ -33,27 +35,25 @@ Analyze the Python source code of TensorFlow Recommenders to evaluate its mainta
 | Long Parameter List | Too many parameters make functions harder to understand. | Parameter count and source inspection. |
 
 **Primary tool:** Codacy Cloud  
-**Complementary tool:** Ruff 
+**Complementary tool:** Ruff
+
+---
 
 ## Task 2 – Detect and Investigate Code Smells
 
 ### Preliminary Findings
 
-
-
 | Candidate | Location | Observation |
 |---|---|---|
-| C1 | `tensorflow_recommenders/tasks/
-retrieval.py` | Maximum Line Length: line exceeds the configured 80-character limit. |
+| C1 | `tensorflow_recommenders/tasks/retrieval.py` | Maximum Line Length: line exceeds the configured 80-character limit. |
 | C2 | `Streaming.call` | Method combines query handling, candidate scoring, top-K reduction, and result assembly. |
 | C3 | `ScaNN` and `Streaming` | Classes manage several responsibilities, including indexing and querying. |
 | C4 | Ranking/factorized tests | Repeated dataset creation and model setup patterns. |
 
 ### Selected Issue: C1 – Maximum Line Length
 
-**File:**' tensorflow_recommenders/tasks/
-retrieval.py'
-**Location:** Line84-87
+**File:** `tensorflow_recommenders/tasks/retrieval.py`  
+**Location:** Line 86
 
 **Tool finding:**
 - Rule: Enforce Maximum Line Length
@@ -64,11 +64,33 @@ retrieval.py'
 
 **Problem:**
 
-The error message contains a line exceeding the configured maximum length of 80 characters. Long lines can reduce readability and make the code harder to maintain.
+The assignment of the `CategoricalCrossentropy` loss function exceeds the configured maximum line length of 80 characters. Long lines can reduce readability and make code harder to understand and maintain.
 
-**Planned improvement:**
+**Original code:**
 
-Reformat the string across shorter lines while preserving the exact error message and behavior.
+```python
+self._loss = loss if loss is not None else tf.keras.losses.CategoricalCrossentropy(
+    from_logits=True, reduction=tf.keras.losses.Reduction.SUM)
+```
+
+**Proposed refactoring:**
+
+```python
+self._loss = (
+    loss
+    if loss is not None
+    else tf.keras.losses.CategoricalCrossentropy(
+        from_logits=True,
+        reduction=tf.keras.losses.Reduction.SUM,
+    )
+)
+```
+
+**Expected improvement:**
+
+Reformat the conditional expression and constructor arguments across shorter lines while preserving the original behavior.
+
+---
 
 ## Task 3 – Prioritize Technical Debt and Plan Refactoring
 
@@ -79,60 +101,107 @@ Reformat the string across shorter lines while preserving the exact error messag
 | C3 – Large Class | Could improve modularity. | High | Defer. |
 | C4 – Duplicated Code | Reduces repeated logic. | Medium | Defer. |
 
+### Refactoring Assignment
+
+| Student | Selected issue | Planned change | Expected result | Verification |
 |---|---|---|---|---|
-| [Your name / GitHub handle] | C1 | Split the long string into shorter lines without changing its content. | Improved readability and compliance with the 80-character limit. | Ruff check and relevant tests. |
+| Meriem Bchini | C1 – Maximum Line Length | Split the conditional expression and constructor arguments across shorter lines. | Improved readability and compliance with the 80-character limit. | Ruff check and relevant tests. |
+
+---
 
 ## Task 4 – Refactor, Verify, and Commit
 
 ### Before Refactoring
 
+The original code contained a long conditional assignment:
+
+```python
 self._loss = loss if loss is not None else tf.keras.losses.CategoricalCrossentropy(
     from_logits=True, reduction=tf.keras.losses.Reduction.SUM)
-"true_candidate_ids`, which will be checked against "
 ```
 
-### Planned Refactoring
+The first line exceeded the configured 80-character limit.
 
-Reformat the affected code while preserving the original error message. 
+### After Refactoring
 
+The proposed change formats the conditional expression and constructor arguments across multiple lines:
 
+```python
+self._loss = (
+    loss
+    if loss is not None
+    else tf.keras.losses.CategoricalCrossentropy(
+        from_logits=True,
+        reduction=tf.keras.losses.Reduction.SUM,
+    )
+)
+```
 
 ### Verification
 
-PS C:\Users\Asus\OneDrive\Bureau\lab5\recommenders> git diff
-diff --git a/tensorflow_recommenders/tasks/retrieval.py b/tensorflow_recommenders/tasks/retrieval.py
-index cfba04f..fcc0c3e 100644
---- a/tensorflow_recommenders/tasks/retrieval.py
-+++ b/tensorflow_recommenders/tasks/retrieval.py
-@@ -1,3 +1,4 @@
-+
- # Copyright 2026 The TensorFlow Recommenders Authors.
- #
- # Licensed under the Apache License, Version 2.0 (the "License");
-:
+**Git diff**
 
-- Confirm that the line-length warning is resolved.
-PS C:\Users\Asus\OneDrive\Bureau\lab5\recommenders> ruff check --select E501 tensorflow_recommenders/tasks/retrieval.py
+The recorded `git diff` output showed an additional blank line at the beginning of `retrieval.py`. The actual formatting change still needs to be verified in the committed version.
+
+**Ruff check**
+
+Command:
+
+```bash
+ruff check --select E501 tensorflow_recommenders/tasks/retrieval.py
+```
+
+Result:
+
+```text
 All checks passed!
-- Run relevant tests for `tensorflow_recommenders/tasks/
-retrieval.py`.
+```
 
-### Results
+This confirms that Ruff did not report any E501 line-length violations in the checked file.
 
-| Measurement | Before | After |
-|---|---|---|
-| Maximum line length | 87 characters | [Result] |
-| Line-length warning | 7 | [Result] |
-| Relevant tests | [Baseline result] | [Result] |
+**Relevant tests**
+
+Command:
+
+```bash
+python -m pytest tensorflow_recommenders/tasks/
+```
+
+
+
 
 ### GQM Answers
 
-**Q1:** The investigation identified readability concerns, including a line exceeding the configured 80-character limit. The selected refactoring aims to improve readability through consistent formatting.
+**Q1: To what extent does the source code contain readability and complexity issues?**
 
-**Q2:** Other potential duplication patterns were observed in ranking/factorized tests and retrieval classes. Further analysis with jscpd is required to quantify and confirm them.
+The investigation identified several potential maintainability concerns, including long methods, large classes, and a line exceeding the configured 80-character limit. The selected issue focuses on improving readability through consistent formatting.
 
-### Conclusion
+**Q2: To what extent does the source code contain duplicated code that increases maintenance effort?**
 
-The selected issue is a small, low-risk maintainability improvement. The refactoring aims to improve code readability without changing the software's behavior. GitHub analysis and relevant tests will provide evidence of the result.
+Potential duplication patterns were observed in ranking and factorized tests. 
+
+---
+
+## Commit Information
 
 
+**Latest commit SHA:** `abdbe4319718f2c6ad5ac681ede78a37aa508c9a`
+
+**Commit message:** `Fix long line in retrieval task`
+
+**Repository:** https://github.com/MeriemBchini/recommenders
+
+**Commit link:** https://github.com/MeriemBchini/recommenders/commit/abdbe4319718f2c6ad5ac681ede78a37aa508c9a
+
+
+
+**Codacy before:** https://app.codacy.com/gh/MeriemBchini/recommenders/issues/current?categories=CodeStyle
+
+**Codacy after:**https://app.codacy.com/gh/MeriemBchini/recommenders/issues/current?categories=CodeStyle
+---
+
+## Conclusion
+
+The investigation identified a minor code-style issue in TensorFlow Recommenders. The selected issue was prioritized because it is localized, requires minimal effort, and offers an opportunity to improve code readability without changing program behavior.
+
+The proposed refactoring separates the conditional expression and constructor arguments into shorter lines. Ruff reported no E501 violations in the checked file. The final evaluation should also confirm that the intended modification is present in the committed code, that relevant tests pass, and that the Codacy result reflects the improvement.
