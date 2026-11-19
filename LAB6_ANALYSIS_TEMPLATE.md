@@ -1,11 +1,11 @@
 # Lab #6 – Investigation Record
 
-**Team / student(s):** [Names and GitHub handles]  
+**Team / student(s):** [meriem bchini]  
 **Mode:** Individual  
 **Approved upstream project:** TensorFlow Recommenders  
 **Repository:**https://github.com/MeriemBchini/recommenders
 **Working branch:** main
-**Baseline SHA:** 
+**Baseline SHA:*abdbe4319718f2c6ad5ac681ede78a37aa508c9a* 
 ## Task 1 – Stakeholder, GQM, and Code Smell Selection
 
 ### Stakeholder: Alex – Software Maintainer
@@ -39,20 +39,21 @@ Analyze the Python source code of TensorFlow Recommenders to evaluate its mainta
 
 ### Preliminary Findings
 
-Manual source inspection identified the following potential issues in TensorFlow Recommenders:
+
 
 | Candidate | Location | Observation |
 |---|---|---|
-| C1 | `tensorflow_recommenders/metrics/factorized_top_k.py` | Maximum Line Length: line exceeds the configured 80-character limit. |
+| C1 | `tensorflow_recommenders/tasks/
+retrieval.py` | Maximum Line Length: line exceeds the configured 80-character limit. |
 | C2 | `Streaming.call` | Method combines query handling, candidate scoring, top-K reduction, and result assembly. |
 | C3 | `ScaNN` and `Streaming` | Classes manage several responsibilities, including indexing and querying. |
 | C4 | Ranking/factorized tests | Repeated dataset creation and model setup patterns. |
 
 ### Selected Issue: C1 – Maximum Line Length
 
-**File:** `tensorflow_recommenders/metrics/factorized_top_k.py`
-
-**Location:** Line 129
+**File:**' tensorflow_recommenders/tasks/
+retrieval.py'
+**Location:** Line84-87
 
 **Tool finding:**
 - Rule: Enforce Maximum Line Length
@@ -78,9 +79,6 @@ Reformat the string across shorter lines while preserving the exact error messag
 | C3 – Large Class | Could improve modularity. | High | Defer. |
 | C4 – Duplicated Code | Reduces repeated logic. | Medium | Defer. |
 
-### Selected Issue and Ownership
-
-| Contributor | Candidate | Planned refactoring | Expected benefit | Verification |
 |---|---|---|---|---|
 | [Your name / GitHub handle] | C1 | Split the long string into shorter lines without changing its content. | Improved readability and compliance with the 80-character limit. | Ruff check and relevant tests. |
 
