@@ -20,7 +20,12 @@ def build_index(k):
 
 
 def recommend(user_id, k=3):
-    """Baseline: top-k items by dot-product score."""
-    index = build_index(k)
+    """Changed: exclude items the user already consumed, still return k items."""
+    consumed = USER_HISTORY.get(user_id, set())
+    index = build_index(k + len(consumed))
     scores, ids = index(tf.constant(USER_EMB[user_id]))
-    return [i.decode() for i in ids.numpy()[0]], scores.numpy()[0].tolist()
+    out = [(i.decode(), s)
+           for i, s in zip(ids.numpy()[0], scores.numpy()[0].tolist())
+           if i.decode() not in consumed]
+    out = out[:k]
+    return [i for i, _ in out], [s for _, s in out]
