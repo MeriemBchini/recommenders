@@ -7,9 +7,10 @@ def test_uses_fork_source():
     assert "site-packages" not in tfrs.__file__
 
 
-def test_baseline_topk():
+def test_changed_excludes_consumed():
     ids, _ = recommend("u1", k=3)
-    assert ids == ["a", "b", "c"]
+    assert "a" not in ids
+    assert ids == ["b", "c", "d"]
 
 
 def test_invariant_ordering_and_size():
